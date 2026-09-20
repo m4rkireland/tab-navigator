@@ -24,6 +24,7 @@ const document = {
       style: {},
       append() {},
       addEventListener() {},
+      setAttribute() {},
       textContent: '',
     };
   },
@@ -31,6 +32,7 @@ const document = {
 class BaseElement {
   constructor() { this._attached = false; }
   get isConnected() { return this._attached; }
+  dispatchEvent() {}
   append() {}
 }
 class CustomEvent { constructor(type, init) { this.type = type; this.detail = init && init.detail; } }
@@ -57,18 +59,18 @@ vm.runInNewContext(source, {
 
 const early = new Card();
 assert.doesNotThrow(() => early.check(), 'early lifecycle checks must tolerate missing config');
-early.setConfig({ enabled: true, base_path: '/phone-room-test/' });
+early.setConfig({ enabled: true, require_device_opt_in: false, base_path: '/phone-room-test/' });
 early.hass = {
   user: { id: 'mark', name: 'Mark' },
   connection: { connected: true },
   states: {},
 };
-assert.equal(early._timer, undefined, 'detached elements must not schedule navigation');
+assert.equal(Boolean(early._timer), false, 'detached elements must not schedule navigation');
 
 const card = new Card();
 card._attached = true;
 card.setConfig({
-  enabled: true,
+  enabled: true, require_device_opt_in: false,
   base_path: '/phone-room-test/',
   user_entities: { mark: 'sensor.mark_area', cassie: 'sensor.cassie_area' },
   state_paths: { Kitchen: 'kitchen', Office: 'office' },
@@ -105,7 +107,7 @@ new Promise(resolve => setTimeout(resolve, 350)).then(() => {
   const remounted = new Card();
   remounted._attached = true;
   remounted.setConfig({
-    enabled: true,
+    enabled: true, require_device_opt_in: false,
     base_path: '/phone-room-test/',
     user_entities: { mark: 'sensor.mark_area', cassie: 'sensor.cassie_area' },
     state_paths: { Kitchen: 'kitchen', Office: 'office' },
