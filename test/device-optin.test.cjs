@@ -160,4 +160,8 @@ failingControl.setDeviceEnabled(false); failingDisable.flush();
 assert.equal(failingController.isEnabled(), false, 'failed persistence must still stop this page immediately');
 assert.equal(failingDisable.navs(), 0);
 console.log('PASS: opt-out stays safe even when persistence fails');
+const registered = new Map();
+vm.runInNewContext(source, { HTMLElement: class {}, customElements: { get: k => registered.get(k), define: (k, v) => registered.set(k, v) } });
+assert.ok(registered.has('tab-navigator-device'), 'new production card name must not resolve to a cached v1.0.1 implementation');
+console.log('PASS: cache-safe device card registration');
 module.exports = { browser };

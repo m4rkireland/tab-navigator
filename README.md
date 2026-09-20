@@ -24,7 +24,7 @@ On the **actual browser or Companion app** you want to follow your sensor, open 
 Place this minimal activation control on a convenient view such as Home:
 
 ```yaml
-type: custom:tab-navigator
+type: custom:tab-navigator-device
 mode: control
 require_device_opt_in: true
 base_path: /my-dashboard/
@@ -35,7 +35,7 @@ user_entities:
 Place this invisible controller in an **existing section on every view** that can be visited, including Home. Do not create an otherwise empty section for it:
 
 ```yaml
-type: custom:tab-navigator
+type: custom:tab-navigator-device
 mode: controller
 require_device_opt_in: true
 base_path: /my-dashboard/
@@ -52,6 +52,10 @@ Use identical user, base-path, and routing configuration across controllers. `mo
 Omit `mode` (or use `mode: diagnostic`) for the diagnostic card, which displays user/entity/state/target and the device activation button. Only configured users see it.
 
 `user_entities` maps an HA user ID to that user's entity. `state_paths` maps entity states to relative URL paths within `base_path`. Unmapped users are always a no-op. An unmapped state uses optional `default_tab`; **omit `default_tab` for no navigation on unknown, unavailable, away, or other unmapped states**. Legacy aliases `users` and `tabs` remain accepted.
+
+### Cache-safe deployment (v1.0.3)
+
+Use `custom:tab-navigator-device` for new device-scoped installations. A browser still holding v1.0.1 cannot resolve that new element to its old, globally enabled implementation. A stale client may show an unknown-card message until it refreshes, but cannot navigate from these new cards. Refresh/reopen HA after upgrading. The original `custom:tab-navigator` name remains supported for existing installations.
 
 ### Upgrading from v1.0.1
 

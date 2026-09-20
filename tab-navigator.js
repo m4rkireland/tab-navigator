@@ -311,4 +311,8 @@
   }
 
   if (!customElements.get || !customElements.get(ELEMENT)) customElements.define(ELEMENT, TabNavigator);
+  // Old cached versions cannot interpret this explicit device-only card type.
+  if (!customElements.get || !customElements.get('tab-navigator-device')) {
+    customElements.define('tab-navigator-device', class extends TabNavigator {});
+  }
 })();
