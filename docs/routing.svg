@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="390" viewBox="0 0 960 390" role="img" aria-labelledby="title desc">
+  <title id="title">Tab Navigator: local, per-user routing</title>
+  <desc id="desc">Illustrative example: the logged-in user selects their configured sensor. Its Kitchen state maps to the kitchen tab in the current browser only. Other browsers are not controlled.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="#22d3ee"/></marker>
+  </defs>
+  <rect width="960" height="390" rx="12" fill="#020617"/>
+  <g font-family="system-ui, sans-serif" fill="#e2e8f0">
+    <text x="32" y="43" font-size="25" font-weight="700">Tab Navigator</text>
+    <text x="32" y="72" font-size="16" fill="#94a3b8">Illustrative routing flow — not a device screenshot</text>
+    <rect x="24" y="100" width="912" height="206" rx="12" fill="#0f172a" stroke="#475569"/>
+    <text x="44" y="132" font-size="17" font-weight="600">Current browser · card mounted and enabled</text>
+    <path d="M310 214 H348 M610 214 H648" stroke="#22d3ee" stroke-width="2" marker-end="url(#arrow)"/>
+    <g fill="#083344" stroke="#22d3ee" stroke-width="1.5">
+      <rect x="44" y="164" width="266" height="114" rx="6"/>
+      <rect x="354" y="164" width="256" height="114" rx="6"/>
+      <rect x="654" y="164" width="262" height="114" rx="6"/>
+    </g>
+    <g font-size="18" font-weight="600">
+      <text x="62" y="194">1 · Logged-in user</text>
+      <text x="372" y="194">2 · Entity state → path</text>
+      <text x="672" y="194">3 · Local navigation</text>
+    </g>
+    <g font-size="15">
+      <text x="62" y="227">user_entities selects</text>
+      <text x="62" y="252">sensor.example_area</text>
+      <text x="372" y="227">Kitchen → kitchen</text>
+      <text x="372" y="252">under /example-dashboard/</text>
+      <text x="672" y="227">/example-dashboard/kitchen</text>
+      <text x="672" y="252">Replace this browser's URL</text>
+    </g>
+    <text x="32" y="339" font-size="16">Other browsers are not controlled. No service calls or entity writes.</text>
+    <text x="32" y="368" font-size="15" fill="#94a3b8">Normal safety guards and the manual-navigation grace period still apply.</text>
+  </g>
+</svg>

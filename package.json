@@ -1,7 +1,7 @@
 {
   "name": "tab-navigator",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Opt-in Home Assistant Lovelace card for per-user tab navigation",
   "scripts": {
     "test": "node test/tab-navigator.test.cjs && node test/behavior.test.cjs"

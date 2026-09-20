@@ -4,6 +4,10 @@ A minimal, opt-in Home Assistant Lovelace card that navigates the current browse
 
 It is intentionally generic: it does not know about rooms, phones, desktops, or Pi displays. Mount the card only on the dashboard/browser where navigation is wanted. It never calls a Home Assistant service and never writes entity state.
 
+![Illustrative flow: the logged-in user's configured sensor maps its state to a tab in the current browser only.](https://raw.githubusercontent.com/m4rkireland/tab-navigator/main/docs/routing.svg)
+
+This schematic uses generic examples; it is not a device screenshot. While the dashboard is open, each user follows their own configured sensor as Home Assistant delivers updates. Physical iPhone Companion App (WKWebView) background/resume behavior has not been verified.
+
 ## Install with HACS
 
 1. In HACS, add `https://github.com/m4rkireland/tab-navigator` as a **custom repository** of type **Dashboard**.
