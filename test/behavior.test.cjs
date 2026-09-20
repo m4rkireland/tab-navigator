@@ -32,6 +32,11 @@ class BaseElement { append() {} }
 class CustomEvent { constructor(type, init) { this.type = type; this.detail = init && init.detail; } }
 let Card;
 const customElements = { define: (_name, value) => { Card = value; }, get: () => undefined };
+const session = new Map();
+const sessionStorage = {
+  getItem(key) { return session.get(key) || null; },
+  setItem(key, value) { session.set(key, value); },
+};
 vm.runInNewContext(source, {
   HTMLElement: BaseElement,
   customElements,
@@ -39,7 +44,7 @@ vm.runInNewContext(source, {
   window,
   location,
   history,
-  sessionStorage: { getItem: () => '[]', setItem() {} },
+  sessionStorage,
   setTimeout,
   clearTimeout,
   Date,
@@ -81,7 +86,27 @@ new Promise(resolve => setTimeout(resolve, 350)).then(() => {
   return new Promise(resolve => setTimeout(resolve, 350));
 }).then(() => {
   assert.equal(location.pathname, '/phone-room-test/office', 'manual navigation must win during grace period');
-  console.log('PASS: scoped replaceState navigation, history preservation, and manual grace period');
+
+  const remounted = new Card();
+  remounted.setConfig({
+    enabled: true,
+    base_path: '/phone-room-test/',
+    user_entities: { mark: 'sensor.mark_area', cassie: 'sensor.cassie_area' },
+    state_paths: { Kitchen: 'kitchen', Office: 'office' },
+    default_tab: 'overview',
+  });
+  remounted.connectedCallback();
+  remounted.hass = {
+    user: { id: 'mark', name: 'Mark' },
+    connection: { connected: true },
+    states: { 'sensor.mark_area': { state: 'Kitchen' } },
+  };
+  return new Promise(resolve => setTimeout(resolve, 350)).then(() => {
+    assert.equal(location.pathname, '/phone-room-test/office', 'manual hold must survive card remount');
+    remounted.disconnectedCallback();
+  });
+}).then(() => {
+  console.log('PASS: scoped replaceState navigation, history preservation, and remount-safe manual grace');
   card.disconnectedCallback();
 }).catch(error => {
   console.error(error);

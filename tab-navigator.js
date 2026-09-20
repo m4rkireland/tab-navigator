@@ -45,7 +45,7 @@
 
     connectedCallback() {
       this._pendingReason = this._pendingReason || 'card loaded';
-      this._manualHoldUntil = 0;
+      this._manualHoldUntil = this.readManualHold();
       this._onVisibility = () => {
         if (document.visibilityState === 'visible') {
           this._pendingReason = 'foreground';
@@ -62,6 +62,7 @@
         if (event && event.detail && event.detail.tabNavigator === true) return;
         if (this.isInScope()) {
           this._manualHoldUntil = Date.now() + this.graceMs();
+          this.writeManualHold(this._manualHoldUntil);
           this.log(`manual navigation detected; auto-navigation paused for ${this.graceMs() / 1000}s`);
         }
         this.render();
@@ -85,7 +86,9 @@
       const wasConnected = this._connected;
       const nowConnected = Boolean(value && value.connection && value.connection.connected === true);
       const previousKey = this._stateKey;
+      const previousUser = this._hass && this._hass.user && this._hass.user.id;
       this._hass = value;
+      if (previousUser !== (value && value.user && value.user.id)) this._manualHoldUntil = this.readManualHold();
       this._connected = nowConnected;
       this._stateKey = this.stateKey();
       if (wasConnected === false && nowConnected) this._pendingReason = 'HA reconnected';
@@ -105,6 +108,22 @@
     graceMs() {
       const seconds = Number(this.config && this.config.manual_grace_seconds);
       return Number.isFinite(seconds) && seconds >= 0 ? seconds * 1000 : 30000;
+    }
+
+    manualHoldKey() {
+      return `tab-navigator-hold-v1:${this._hass && this._hass.user ? this._hass.user.id : 'unknown'}`;
+    }
+
+    readManualHold() {
+      try {
+        const value = Number(sessionStorage.getItem(this.manualHoldKey()));
+        return Number.isFinite(value) && value > Date.now() ? value : 0;
+      } catch (_) { return 0; }
+    }
+
+    writeManualHold(value) {
+      try { sessionStorage.setItem(this.manualHoldKey(), String(value || 0)); }
+      catch (_) { /* sessionStorage is optional */ }
     }
 
     storageKey() {
@@ -195,6 +214,7 @@
         this._button.style.cssText = 'padding:8px 12px;font:inherit';
         this._button.addEventListener('click', () => {
           this._manualHoldUntil = 0;
+          this.writeManualHold(0);
           this._pendingReason = 'manual check';
           this.check();
         });
