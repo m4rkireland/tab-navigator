@@ -28,7 +28,11 @@ const document = {
     };
   },
 };
-class BaseElement { append() {} }
+class BaseElement {
+  constructor() { this._attached = false; }
+  get isConnected() { return this._attached; }
+  append() {}
+}
 class CustomEvent { constructor(type, init) { this.type = type; this.detail = init && init.detail; } }
 let Card;
 const customElements = { define: (_name, value) => { Card = value; }, get: () => undefined };
@@ -51,7 +55,18 @@ vm.runInNewContext(source, {
   CustomEvent,
 });
 
+const early = new Card();
+assert.doesNotThrow(() => early.check(), 'early lifecycle checks must tolerate missing config');
+early.setConfig({ enabled: true, base_path: '/phone-room-test/' });
+early.hass = {
+  user: { id: 'mark', name: 'Mark' },
+  connection: { connected: true },
+  states: {},
+};
+assert.equal(early._timer, undefined, 'detached elements must not schedule navigation');
+
 const card = new Card();
+card._attached = true;
 card.setConfig({
   enabled: true,
   base_path: '/phone-room-test/',
@@ -88,6 +103,7 @@ new Promise(resolve => setTimeout(resolve, 350)).then(() => {
   assert.equal(location.pathname, '/phone-room-test/office', 'manual navigation must win during grace period');
 
   const remounted = new Card();
+  remounted._attached = true;
   remounted.setConfig({
     enabled: true,
     base_path: '/phone-room-test/',

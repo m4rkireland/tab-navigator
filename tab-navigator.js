@@ -143,9 +143,9 @@
       catch (_) { /* sessionStorage is optional */ }
     }
 
-    isEnabled() { return this.config.enabled !== false; }
+    isEnabled() { return Boolean(this.config) && this.config.enabled !== false; }
 
-    isConnected() { return this._connected === true; }
+    isHaConnected() { return this._connected === true; }
 
     isInScope() {
       return typeof location !== 'undefined' && location.pathname.startsWith(basePath(this.config.base_path));
@@ -167,8 +167,8 @@
     }
 
     check() {
-      if (this.isConnected() && this.config && this.isConnectedElement()) this.render();
-      if (!this.isEnabled() || !this.isConnected() || !this.config || !this.isConnectedElement()) return;
+      if (this.isHaConnected() && this.config && this.isConnectedElement()) this.render();
+      if (!this.isEnabled() || !this.isHaConnected() || !this.isConnectedElement()) return;
       if (!this._pendingReason || this._timer || document.visibilityState !== 'visible') return;
       if (!this.isInScope() || this.isGuarded()) return;
       if (Date.now() < (this._manualHoldUntil || 0)) return;
@@ -177,7 +177,7 @@
       this._pendingReason = null;
       this._timer = setTimeout(() => {
         this._timer = null;
-        if (!this.isEnabled() || !this.isConnected() || !this.isConnectedElement() ||
+        if (!this.isEnabled() || !this.isHaConnected() || !this.isConnectedElement() ||
             document.visibilityState !== 'visible' || !this.isInScope() || this.isGuarded()) return;
         if (Date.now() < (this._manualHoldUntil || 0)) return;
         const target = this.targetPath();
@@ -199,7 +199,7 @@
       }, 300);
     }
 
-    isConnectedElement() { return this.isConnected !== false; }
+    isConnectedElement() { return this.isConnected === true; }
 
     render() {
       if (!this._hass || !this._hass.user || typeof document === 'undefined') return;

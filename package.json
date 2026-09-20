@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Opt-in Home Assistant Lovelace card for per-user tab navigation",
   "scripts": {
-    "test": "node test/tab-navigator.test.cjs"
+    "test": "node test/tab-navigator.test.cjs && node test/behavior.test.cjs"
   },
   "license": "MIT"
 }
