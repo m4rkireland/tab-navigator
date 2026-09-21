@@ -1,10 +1,10 @@
 {
   "name": "tab-navigator",
   "private": true,
-  "version": "1.0.3",
-  "description": "Opt-in Home Assistant Lovelace card for per-user tab navigation",
+  "version": "1.0.4",
+  "description": "Opt-in Home Assistant resource for browser-local tab navigation",
   "scripts": {
-    "test": "node test/tab-navigator.test.cjs && node test/behavior.test.cjs && node test/device-optin.test.cjs"
+    "test": "node test/tab-navigator.test.cjs && node test/global-controller.test.cjs"
   },
   "license": "MIT"
 }

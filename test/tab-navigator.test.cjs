@@ -6,17 +6,25 @@ const path = require('node:path');
 const sourcePath = path.join(__dirname, '..', 'tab-navigator.js');
 const source = fs.existsSync(sourcePath) ? fs.readFileSync(sourcePath, 'utf8') : '';
 let TabNavigator;
-const customElements = { define: (_name, value) => { TabNavigator = value; } };
+const registry = new Map();
+const customElements = {
+  define: (name, value) => { registry.set(name, value); TabNavigator = value; },
+  get: name => registry.get(name),
+};
+const noopEvents = { addEventListener() {}, removeEventListener() {}, dispatchEvent() {} };
 vm.runInNewContext(source, {
   HTMLElement: class {},
   customElements,
-  document: {},
-  window: {},
+  document: { ...noopEvents, visibilityState: 'visible', querySelector: () => null },
+  window: { ...noopEvents },
   location: { pathname: '/phone-room-test/overview', search: '' },
   history: { state: null },
   sessionStorage: { getItem: () => null, setItem: () => {} },
+  localStorage: { getItem: () => null, setItem: () => {} },
   setTimeout,
   clearTimeout,
+  setInterval: () => 1,
+  clearInterval() {},
   Date,
   CustomEvent: class {},
 });
@@ -24,6 +32,7 @@ vm.runInNewContext(source, {
 assert.ok(TabNavigator, 'tab-navigator custom element must be registered');
 
 const config = {
+  base_path: '/phone-room-test/',
   user_entities: { mark: 'sensor.mark_area', cassie: 'sensor.cassie_area' },
   state_paths: { Kitchen: 'kitchen', Office: 'office' },
   default_tab: 'overview',
@@ -48,6 +57,7 @@ delete hass.states['sensor.mark_area'];
 assert.equal(TabNavigator.resolve(hass, config), 'overview');
 
 const badConfig = {
+  base_path: '/phone-room-test/',
   user_entities: { mark: 'sensor.mark_area' },
   state_paths: { Kitchen: '../other-dashboard' },
 };
